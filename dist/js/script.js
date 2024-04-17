@@ -6,7 +6,7 @@ var __webpack_exports__ = {};
   \************************/
 
 
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   // Tabs
 
   const tabsHeader = document.querySelector('.tabheader__items'),
@@ -110,6 +110,32 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
   setClock('.timer', deadline);
+
+  //Modal
+
+  const modalBtns = document.querySelectorAll('[data-modal]'),
+    modalWindow = document.querySelector('.modal'),
+    closeWindow = document.querySelector('[data-close]');
+  modalBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      modalWindow.classList.toggle('hide');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  function closeModalWindow() {
+    modalWindow.classList.toggle('hide');
+    document.body.style.overflow = '';
+  }
+  modalWindow.addEventListener('click', e => {
+    if (e.target === closeWindow || e.target === modalWindow) {
+      closeModalWindow();
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Escape' && !modalWindow.classList.contains('hide')) {
+      closeModalWindow();
+    }
+  });
 });
 /******/ })()
 ;
