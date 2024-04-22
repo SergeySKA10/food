@@ -253,15 +253,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const forms = document.querySelectorAll('form');
 
+	// сообщения пользователю после submit
+
 	const message = {
 		loading: 'Загрузка',
 		success: 'Спасибо! Менеджер свяжется с Вами в ближайшее время',
 		failure: 'Что-то пошло не так...'
 	};
 
+	// реализация функции на каждой форме
+
 	forms.forEach(form => {
 		postData(form);
 	});
+
+	// функция по отправке POST запроса
 
 	function postData(form) {
 		form.addEventListener('submit', (e) => {
@@ -274,11 +280,22 @@ document.addEventListener('DOMContentLoaded', () => {
 			const request = new XMLHttpRequest();
 
 			request.open('POST', 'server.php');
-			// request.setRequestHeader('Content-type', 'multipart/from-data');
+			request.setRequestHeader('Content-type', 'application/json');
 
-			const formData = new FormData(form);
+			const formData = new FormData(form),
+				  obj = {}; // создаем объект для конвертации в json
+			
+			// добавляем ключ - значение в obj
 
-			request.send(formData);
+			formData.forEach((value, key) => {
+				obj[key] = value;
+			});
+
+			// конвертируем obj => json
+
+			const json = JSON.stringify(obj);
+
+			request.send(json);
 
 			request.addEventListener('load', () => {
 				if (request.status === 200) {
