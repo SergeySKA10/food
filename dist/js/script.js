@@ -7,7 +7,7 @@ var __webpack_exports__ = {};
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Tabs
+  // TABS
 
   const tabsHeader = document.querySelector('.tabheader__items'),
     tabs = document.querySelectorAll('.tabheader__item'),
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  //Timer
+  //TIMER
 
   // const deadline = Date.parse(new Date()) + 60000;  // реализовать функционал записи deadline в localstrage (индивидуальный таймер для каждого пользователя)
 
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   setClock('.timer', deadline);
 
-  //Modal
+  //MODAL
 
   const modalBtns = document.querySelectorAll('[data-modal]'),
     modalWindow = document.querySelector('.modal'),
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   window.addEventListener('scroll', scrollOpenModalWindow);
 
-  // Menu Cards (class ES6)
+  // MENU CARDS (class ES6)
 
   class MenuCard {
     constructor(src, alt, title, descr, price, perentSelector, ...classes) {
@@ -203,6 +203,44 @@ document.addEventListener('DOMContentLoaded', () => {
   new MenuCard('img/tabs/vegy.jpg', 'vegy', 'Меню "Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 9, '.menu__field .container').create();
   new MenuCard('img/tabs/elite.jpg', 'elite', 'Меню “Премиум”', 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', 14, '.menu__field .container', 'menu__item', 'new').create();
   new MenuCard('img/tabs/post.jpg', 'post', 'Меню "Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 11, '.menu__field .container', 'menu__item').create();
+
+  // FORMS
+
+  const forms = document.querySelectorAll('form');
+  const message = {
+    loading: 'Загрузка',
+    success: 'Спасибо! Менеджер свяжется с Вами в ближайшее время',
+    failure: 'Что-то пошло не так...'
+  };
+  forms.forEach(form => {
+    postData(form);
+  });
+  function postData(form) {
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const statusMessage = document.createElement('div');
+      statusMessage.textContent = message.loading;
+      form.append(statusMessage);
+      const request = new XMLHttpRequest();
+      request.open('POST', 'server.php');
+      // request.setRequestHeader('Content-type', 'multipart/from-data');
+
+      const formData = new FormData(form);
+      request.send(formData);
+      request.addEventListener('load', () => {
+        if (request.status === 200) {
+          console.log(request.response);
+          statusMessage.textContent = message.success;
+          form.reset();
+          setTimeout(() => {
+            statusMessage.remove();
+          }, 3000);
+        } else {
+          statusMessage.textContent = message.failure;
+        }
+      });
+    });
+  }
 });
 /******/ })()
 ;

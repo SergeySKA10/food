@@ -2,7 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-	// Tabs
+	// TABS
 
 	const tabsHeader = document.querySelector('.tabheader__items'),
 		  tabs = document.querySelectorAll('.tabheader__item'),
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 
-	//Timer
+	//TIMER
 
 	// const deadline = Date.parse(new Date()) + 60000;  // реализовать функционал записи deadline в localstrage (индивидуальный таймер для каждого пользователя)
 
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	setClock('.timer', deadline);
 
-	//Modal
+	//MODAL
 
 	const modalBtns = document.querySelectorAll('[data-modal]'),
 		  modalWindow = document.querySelector('.modal'),
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	window.addEventListener('scroll', scrollOpenModalWindow);
 
-	// Menu Cards (class ES6)
+	// MENU CARDS (class ES6)
 
 	class MenuCard {
 		constructor(src, alt, title, descr, price, perentSelector, ...classes) {
@@ -247,5 +247,54 @@ document.addEventListener('DOMContentLoaded', () => {
 		'.menu__field .container',
 		'menu__item',
 	).create();
+
+
+	// FORMS
+
+	const forms = document.querySelectorAll('form');
+
+	const message = {
+		loading: 'Загрузка',
+		success: 'Спасибо! Менеджер свяжется с Вами в ближайшее время',
+		failure: 'Что-то пошло не так...'
+	};
+
+	forms.forEach(form => {
+		postData(form);
+	});
+
+	function postData(form) {
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+
+			const statusMessage = document.createElement('div');
+			statusMessage.textContent = message.loading;
+			form.append(statusMessage);
+
+			const request = new XMLHttpRequest();
+
+			request.open('POST', 'server.php');
+			// request.setRequestHeader('Content-type', 'multipart/from-data');
+
+			const formData = new FormData(form);
+
+			request.send(formData);
+
+			request.addEventListener('load', () => {
+				if (request.status === 200) {
+					console.log(request.response);
+					statusMessage.textContent = message.success;
+					form.reset();
+
+					setTimeout(() => {
+						statusMessage.remove();
+					}, 3000);
+				} else {
+					statusMessage.textContent = message.failure;
+				}
+			});
+
+		});
+	}
 
 });
