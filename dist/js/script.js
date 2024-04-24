@@ -114,13 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
   //MODAL
 
   const modalBtns = document.querySelectorAll('[data-modal]'),
-    modalWindow = document.querySelector('.modal'),
-    closeWindow = document.querySelector('[data-close]');
+    modalWindow = document.querySelector('.modal');
 
   //функция открытия модального окна
 
   function openModalWindow() {
-    modalWindow.classList.toggle('hide');
+    modalWindow.classList.add('show');
+    modalWindow.classList.remove('hide');
     document.body.style.overflow = 'hidden';
     clearInterval(timerOpenModalWindowId);
   }
@@ -131,19 +131,20 @@ document.addEventListener('DOMContentLoaded', () => {
   //функция закрытия модального окна
 
   function closeModalWindow() {
-    modalWindow.classList.toggle('hide');
+    modalWindow.classList.remove('show');
+    modalWindow.classList.add('hide');
     document.body.style.overflow = '';
   }
 
   //Варианты закрытия модального окна: клик на close или вне модальное окно, клавиша escape
 
   modalWindow.addEventListener('click', e => {
-    if (e.target === closeWindow || e.target === modalWindow) {
+    if (e.target.getAttribute('data-close') == '' || e.target === modalWindow) {
       closeModalWindow();
     }
   });
   document.addEventListener('keydown', e => {
-    if (e.code === 'Escape' && !modalWindow.classList.contains('hide')) {
+    if (e.code === 'Escape' && modalWindow.classList.contains('show')) {
       closeModalWindow();
     }
   });
@@ -211,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // сообщения пользователю после submit
 
   const message = {
-    loading: 'Загрузка',
+    loading: 'img/spinner.svg',
     success: 'Спасибо! Менеджер свяжется с Вами в ближайшее время',
     failure: 'Что-то пошло не так...'
   };
@@ -227,16 +228,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function postData(form) {
     form.addEventListener('submit', e => {
       e.preventDefault();
-      const statusMessage = document.createElement('div');
-      statusMessage.textContent = message.loading;
-      form.append(statusMessage);
+      const statusMessage = document.createElement('img');
+      statusMessage.src = message.loading;
+      statusMessage.style.cssText = `
+				display: block;
+				margin: 0 auto;
+			`;
+      form.insertAdjacentElement('afterend', statusMessage);
       const request = new XMLHttpRequest();
       request.open('POST', 'server.php');
       request.setRequestHeader('Content-type', 'application/json');
       const formData = new FormData(form),
         obj = {}; // создаем объект для конвертации в json
 
-      // добавляем ключ - значение в obj
+      // добавляем "ключ - значение" в obj из formData
 
       formData.forEach((value, key) => {
         obj[key] = value;
@@ -249,16 +254,39 @@ document.addEventListener('DOMContentLoaded', () => {
       request.addEventListener('load', () => {
         if (request.status === 200) {
           console.log(request.response);
-          statusMessage.textContent = message.success;
+          showResponseToUserRequest(message.success);
           form.reset();
-          setTimeout(() => {
-            statusMessage.remove();
-          }, 3000);
+          statusMessage.remove();
         } else {
-          statusMessage.textContent = message.failure;
+          showResponseToUserRequest(message.failure);
         }
       });
     });
+  }
+
+  // Функция по отображению ответа пользователю после отправки формы
+
+  function showResponseToUserRequest(message) {
+    const prevModalDilog = document.querySelector('.modal__dialog');
+    prevModalDilog.classList.add('hide');
+    openModalWindow();
+    const modalThanks = document.createElement('div');
+    modalThanks.classList.add('modal__dialog');
+    modalThanks.innerHTML = `
+			<div class="modal__content">	
+				<div data-close class="modal__close">&times;</div>
+				<div class="modal__title">${message}</div>
+			</div>
+		`;
+    document.querySelector('.modal').append(modalThanks);
+
+    // закрытие модального окна благодарности и возвращение модального кона в исходное состояние
+
+    setTimeout(() => {
+      modalThanks.remove();
+      prevModalDilog.classList.remove('hide');
+      closeModalWindow();
+    }, 3000);
   }
 });
 /******/ })()

@@ -1,5 +1,6 @@
 .modal {
     position: fixed;
+    display: none;
     top: 0;
     left: 0;
     z-index: 1050;
@@ -56,4 +57,12 @@
         width: 280px;
         margin: 0 auto;
     }
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
 }
