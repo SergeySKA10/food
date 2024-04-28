@@ -235,9 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				margin: 0 auto;
 			`;
       form.insertAdjacentElement('afterend', statusMessage);
-      const request = new XMLHttpRequest();
-      request.open('POST', 'server.php');
-      request.setRequestHeader('Content-type', 'application/json');
       const formData = new FormData(form),
         obj = {}; // создаем объект для конвертации в json
 
@@ -247,19 +244,22 @@ document.addEventListener('DOMContentLoaded', () => {
         obj[key] = value;
       });
 
-      // конвертируем obj => json
+      // используем fetch для запроса
 
-      const json = JSON.stringify(obj);
-      request.send(json);
-      request.addEventListener('load', () => {
-        if (request.status === 200) {
-          console.log(request.response);
-          showResponseToUserRequest(message.success);
-          form.reset();
-          statusMessage.remove();
-        } else {
-          showResponseToUserRequest(message.failure);
-        }
+      fetch('server.php', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(obj) // конвертируем obj => json
+      }).then(data => data.text()).then(data => {
+        console.log(data);
+        showResponseToUserRequest(message.success);
+      }).catch(() => {
+        showResponseToUserRequest(message.failure);
+      }).finally(() => {
+        statusMessage.remove();
+        form.reset();
       });
     });
   }
