@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     changeToUAH() {
       this.price = this.price * this.transfer;
     }
-    create() {
+    render() {
       const card = document.createElement('div');
       if (this.classes.length === 0) {
         this.classCard = 'menu__item';
@@ -200,10 +200,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   ;
 
+  // функция получения данных из db.json для карточек меню
+
+  const getData = async url => {
+    const result = await fetch(url);
+
+    // проверяем статус запроса
+
+    if (!result.ok) {
+      throw new Error(`Could not fetch ${url}, status: ${result.status}`); // создаем ошибку для вывода статуса если статус запроса fetch не ok (200)
+    }
+    return result.json();
+  };
+
   // создание карточек меню на странице
-  new MenuCard('img/tabs/vegy.jpg', 'vegy', 'Меню "Фитнес"', 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 9, '.menu__field .container').create();
-  new MenuCard('img/tabs/elite.jpg', 'elite', 'Меню “Премиум”', 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!', 14, '.menu__field .container', 'menu__item', 'new').create();
-  new MenuCard('img/tabs/post.jpg', 'post', 'Меню "Постное"', 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.', 11, '.menu__field .container', 'menu__item').create();
+
+  getData('http://localhost:3000/menu').then(data => {
+    data.forEach(({
+      img,
+      altimg,
+      title,
+      descr,
+      price
+    }) => {
+      new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
+    });
+  });
 
   // FORMS
 
@@ -220,12 +242,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // реализация функции на каждой форме
 
   forms.forEach(form => {
-    postData(form);
+    bindPostData(form);
   });
+
+  // функция по отправке данных на сервер
+
+  const postData = async (url, data) => {
+    // используем fetch для запроса
+    const result = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: data
+    });
+    return await result.json();
+  };
 
   // функция по отправке POST запроса
 
-  function postData(form) {
+  function bindPostData(form) {
     form.addEventListener('submit', e => {
       e.preventDefault();
       const statusMessage = document.createElement('img');
@@ -236,23 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			`;
       form.insertAdjacentElement('afterend', statusMessage);
       const formData = new FormData(form),
-        obj = {}; // создаем объект для конвертации в json
+        json = JSON.stringify(Object.fromEntries(formData.entries())); // преобразование formData в массив  => из масива в объект => объект в JSON
 
-      // добавляем "ключ - значение" в obj из formData
-
-      formData.forEach((value, key) => {
-        obj[key] = value;
-      });
-
-      // используем fetch для запроса
-
-      fetch('server.php', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(obj) // конвертируем obj => json
-      }).then(data => data.text()).then(data => {
+      postData('http://localhost:3000/requests', json).then(data => {
         console.log(data);
         showResponseToUserRequest(message.success);
       }).catch(() => {

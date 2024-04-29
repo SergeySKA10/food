@@ -15,9 +15,9 @@ gulp.task("copy-html", () => {
 		.pipe(browsersync.stream());
 });
 
-gulp.task("copy-server-php", () => {
+gulp.task("copy-server", () => {
 	return gulp
-	.src("./src/server.php")
+	.src("./src/db.json")
 	.pipe(gulp.dest(dist))
 	.pipe(browsersync.stream());
 });
@@ -91,12 +91,12 @@ gulp.task("watch", () => {
 	gulp.watch("./src/img/**/*.*", gulp.parallel("copy-assets"));
 	gulp.watch("./src/scss/**/*.scss", gulp.parallel("build-sass"));
 	gulp.watch("./src/js/**/*.js", gulp.parallel("build-js"));
-	gulp.watch("./src/server.php", gulp.parallel("copy-server-php"));
+	gulp.watch("./src/db.json", gulp.parallel("copy-server"));
 });
 
 gulp.task(
 	"build",
-	gulp.parallel("copy-html", "copy-assets", "build-sass", "build-js", "copy-server-php")
+	gulp.parallel("copy-html", "copy-assets", "build-sass", "build-js", "copy-server")
 );
 
 gulp.task("prod", () => {
