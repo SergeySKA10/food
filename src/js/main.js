@@ -334,4 +334,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	}
 
+	//SLIDER
+
+	const slides = document.querySelectorAll('.offer__slide'),
+		  sliderArrow = document.querySelector('.offer__slider-counter'),
+		  current = document.querySelector('#current'),
+		  total = document.querySelector('#total');
+
+	let index = 0;
+
+	if (slides.length < 10) {
+		total.textContent = `0${slides.length}`;
+	} else {
+		total.textContent = slides.length;
+	}
+
+	const hideSlides = () => {
+		slides.forEach(slide => {
+			slide.classList.add('hide');
+			slide.classList.remove('show');
+		});
+	};
+
+	const showSlide = (i) => {
+		slides.forEach((slide, ind) => {
+			if (ind === i) {
+				slide.classList.add('show');
+				slide.classList.remove('hide');
+			}
+		});
+
+		if (index < 10) {
+			current.textContent = `0${index + 1}`;
+		} else {
+			current.textContent = index + 1;
+		}
+	};
+
+	hideSlides();
+	showSlide(index);
+
+	sliderArrow.addEventListener('click', (e) => {
+		
+		if (e.target.getAttribute('data-next') == '') {
+			index += 1;
+			if (index > slides.length - 1) {
+				index = 0;
+			}
+			hideSlides();
+			showSlide(index);
+		} else if (e.target.getAttribute('data-prev') == '') {
+			index -= 1;
+			if (index < 0) {
+				index = 3;
+			}
+			hideSlides();
+			showSlide(index);
+		}
+	});
+
+
+
 });
