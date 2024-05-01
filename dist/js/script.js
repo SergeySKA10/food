@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // функция получения данных из db.json для карточек меню
 
-  const getData = async url => {
+  const getResource = async url => {
     const result = await fetch(url);
 
     // проверяем статус запроса
@@ -210,12 +210,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!result.ok) {
       throw new Error(`Could not fetch ${url}, status: ${result.status}`); // создаем ошибку для вывода статуса если статус запроса fetch не ok (200)
     }
-    return result.json();
+    return await result.json();
   };
 
   // создание карточек меню на странице
 
-  getData('http://localhost:3000/menu').then(data => {
+  getResource('http://localhost:3000/menu').then(data => {
     data.forEach(({
       img,
       altimg,
@@ -323,42 +323,33 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     total.textContent = slides.length;
   }
-  const hideSlides = () => {
+  const toggleSlides = i => {
     slides.forEach(slide => {
       slide.classList.add('hide');
-      slide.classList.remove('show');
     });
-  };
-  const showSlide = i => {
-    slides.forEach((slide, ind) => {
-      if (ind === i) {
-        slide.classList.add('show');
-        slide.classList.remove('hide');
-      }
-    });
+    slides[i].classList.toggle('hide');
     if (index < 10) {
       current.textContent = `0${index + 1}`;
     } else {
       current.textContent = index + 1;
     }
   };
-  hideSlides();
-  showSlide(index);
+  toggleSlides(index);
+  const showSlide = n => {
+    index += n;
+    if (index > slides.length - 1) {
+      index = 0;
+    }
+    if (index < 0) {
+      index = 3;
+    }
+    toggleSlides(index);
+  };
   sliderArrow.addEventListener('click', e => {
     if (e.target.getAttribute('data-next') == '') {
-      index += 1;
-      if (index > slides.length - 1) {
-        index = 0;
-      }
-      hideSlides();
-      showSlide(index);
+      showSlide(1);
     } else if (e.target.getAttribute('data-prev') == '') {
-      index -= 1;
-      if (index < 0) {
-        index = 3;
-      }
-      hideSlides();
-      showSlide(index);
+      showSlide(-1);
     }
   });
 });
