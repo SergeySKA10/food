@@ -339,9 +339,28 @@ document.addEventListener('DOMContentLoaded', () => {
 	const slides = document.querySelectorAll('.offer__slide'),
 		  sliderArrow = document.querySelector('.offer__slider-counter'),
 		  current = document.querySelector('#current'),
-		  total = document.querySelector('#total');
+		  total = document.querySelector('#total'),
+		  sliderWrapper = document.querySelector('.offer__slider-wrapper'),
+		  sliderField = document.querySelector('.offer__slider-inner'),
+		  width = window.getComputedStyle(sliderWrapper).width,
+		  slider = document.querySelector('.offer__slider');
 
-	let index = 0;
+	let index = 1,
+		offset = 0;
+		
+	// Расчет current
+	
+	const calcCurrent = (i) => {
+		if (i < 10) {
+			current.textContent = `0${i}`;
+		} else {
+			current.textContent = i;
+		}
+	};
+
+	calcCurrent(index);
+		
+	// установка total
 
 	if (slides.length < 10) {
 		total.textContent = `0${slides.length}`;
@@ -349,42 +368,130 @@ document.addEventListener('DOMContentLoaded', () => {
 		total.textContent = slides.length;
 	}
 
-	const toggleSlides = (i) => {
-		slides.forEach(slide => {
-			slide.classList.add('hide');
-		});
+	sliderField.style.cssText = `
+		width: ${100 * slides.length}%;
+		display: flex;
+		transition: 0.5s all;
+	`;
+	slides.forEach(slide => {
+		slide.style.width = width;
+	});
 
-		slides[i].classList.toggle('hide');
+	sliderWrapper.style.overflow = 'hidden';
 
-		if (index < 10) {
-			current.textContent = `0${index + 1}`;
-		} else {
-			current.textContent = index + 1;
-		}
-	};
-
-	toggleSlides(index);
-
-	const showSlide = (n) => {
-		index += n;
-		if (index > slides.length - 1) {
-			index = 0;
-		}
-
-		if (index < 0) {
-			index = 3;
-		}
-
-		toggleSlides(index);
-	};
+	//Перелистывание slides
 
 	sliderArrow.addEventListener('click', (e) => {
 		
 		if (e.target.getAttribute('data-next') == '') {
-			showSlide(1);
-		} else if (e.target.getAttribute('data-prev') == '') {
-			showSlide(-1);
+			if (offset == +width.slice(0, slides.length - 1) * (slides.length - 1)) {
+				offset = 0;
+			} else {
+				offset += +width.slice(0, slides.length - 1);
+			}
+			sliderField.style.transform = `translateX(-${offset}px)`;
+			
+			if (index == slides.length) {
+				index = 1;
+			} else {
+				index++;
+			}
+			calcCurrent(index);
+			indicateDots(dots);
+
+		 } else if (e.target.getAttribute('data-prev') == '') {
+			if (offset == 0) {
+				offset = +width.slice(0, slides.length - 1) * (slides.length - 1);
+			} else {
+				offset -= +width.slice(0, slides.length - 1);
+			}
+			sliderField.style.transform = `translateX(-${offset}px)`;
+
+			if (index == 1) {
+				index = slides.length;
+			} else {
+				index--;
+			}
+
+			calcCurrent(index);
+			indicateDots(dots);
 		}
 	});
+
+	// формирование и добавление dots на слайдер
+
+	slider.style.position = 'relative';
+
+	const dots = [];
+	
+	const dotsWrapper = document.createElement('ol');
+	dotsWrapper.classList.add('carousel-indicators');
+	dotsWrapper.style.cssText = `
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 15;
+		display: flex;
+		justify-content: center;
+		margin-right: 15%;
+		margin-left: 15%;
+		list-style: none;
+	`;
+	slider.append(dotsWrapper);
+
+	for (let i = 0; i < slides.length; i++) {
+		const dot = document.createElement('li');
+		dot.setAttribute('data-slide-to', i + 1);
+		dot.style.cssText = `
+			box-sizing: content-box;
+			flex: 0 1 auto;
+			width: 30px;
+			height: 6px;
+			margin-right: 3px;
+			margin-left: 3px;
+			cursor: pointer;
+			background-color: #fff;
+			background-clip: padding-box;
+			border-top: 10px solid transparent;
+			border-bottom: 10px solid transparent;
+			opacity: .5;
+			transition: opacity .6s ease;
+		`;
+		dotsWrapper.append(dot);
+
+		if (i == 0) {
+			dot.style.opacity = '1';
+		}
+
+		dots.push(dot);
+	}
+
+	// функция индикации точек
+
+	function indicateDots(arr) {
+		arr.forEach((el, ind) => {
+			el.style.opacity = '0.5';
+			if (ind == index - 1) {
+				el.style.opacity = '1';
+			}
+		});
+	}
+
+	// переключение слайдов при нажатии на dots
+
+	dots.forEach(dot => {
+		dot.addEventListener('click', (e) => {
+			const slideNum = e.target.getAttribute('data-slide-to');
+
+			offset = +width.slice(0, slides.length - 1) * (slideNum - 1);
+			sliderField.style.transform = `translateX(-${offset}px)`;
+
+			index = slideNum;
+			calcCurrent(index);
+			indicateDots(dots);
+		});
+	});
+
 
 });
