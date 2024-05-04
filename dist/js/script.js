@@ -351,15 +351,18 @@ document.addEventListener('DOMContentLoaded', () => {
     slide.style.width = width;
   });
   sliderWrapper.style.overflow = 'hidden';
+  function stringToDigits(str) {
+    return +str.replace(/\D/g, '');
+  }
 
   //Перелистывание slides
 
   sliderArrow.addEventListener('click', e => {
     if (e.target.getAttribute('data-next') == '') {
-      if (offset == +width.slice(0, slides.length - 1) * (slides.length - 1)) {
+      if (offset == stringToDigits(width) * (slides.length - 1)) {
         offset = 0;
       } else {
-        offset += +width.slice(0, slides.length - 1);
+        offset += stringToDigits(width);
       }
       sliderField.style.transform = `translateX(-${offset}px)`;
       if (index == slides.length) {
@@ -371,9 +374,9 @@ document.addEventListener('DOMContentLoaded', () => {
       indicateDots(dots);
     } else if (e.target.getAttribute('data-prev') == '') {
       if (offset == 0) {
-        offset = +width.slice(0, slides.length - 1) * (slides.length - 1);
+        offset = stringToDigits(width) * (slides.length - 1);
       } else {
-        offset -= +width.slice(0, slides.length - 1);
+        offset -= stringToDigits(width);
       }
       sliderField.style.transform = `translateX(-${offset}px)`;
       if (index == 1) {
@@ -446,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
   dots.forEach(dot => {
     dot.addEventListener('click', e => {
       const slideNum = e.target.getAttribute('data-slide-to');
-      offset = +width.slice(0, slides.length - 1) * (slideNum - 1);
+      offset = stringToDigits(width) * (slideNum - 1);
       sliderField.style.transform = `translateX(-${offset}px)`;
       index = slideNum;
       calcCurrent(index);
