@@ -460,11 +460,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // CALC
 
   const result = document.querySelector('.calculating__result span');
-  let sex = 'female',
-    weight,
-    height,
-    age,
-    ratio = 1.375;
+  let sex, weight, height, age, ratio;
+
+  // функция расчета изначальных значений статических элементов
+
+  const initStaticInformation = (key, value) => {
+    if (localStorage.getItem(key)) {
+      return localStorage.getItem(key);
+    } else {
+      localStorage.setItem(key, value);
+      return value;
+    }
+  };
+  sex = initStaticInformation('sex', 'female');
+  ratio = initStaticInformation('ratio', 1.375);
+
+  // функция установки класса активности исходя из начальных значений статических элементов
+
+  function initLocalSettingCalc(selector, activeClass) {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(elem => {
+      elem.classList.remove(activeClass);
+      if (elem.getAttribute('id') === localStorage.getItem('sex')) {
+        elem.classList.add(activeClass);
+      }
+      if (elem.getAttribute('data-ratio') === localStorage.getItem('ratio')) {
+        elem.classList.add(activeClass);
+      }
+    });
+  }
+  initLocalSettingCalc('#gender div', 'calculating__choose-item_active');
+  initLocalSettingCalc('.calculating__choose_big div', 'calculating__choose-item_active');
+
+  // функция подсчета итогового результата
+
   function calcTotal() {
     if (!sex || !height || !weight || !age || !ratio) {
       result.textContent = '____';
@@ -477,14 +506,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   calcTotal();
-  function getStaticInformation(parentSelector, activeClass) {
-    const elements = document.querySelectorAll(`${parentSelector} div`);
+
+  // функция переключения класса активности у статических элементов, получения их значений
+  // в зависимости от выбора и записи результата в local storage
+
+  function getStaticInformation(selector, activeClass) {
+    const elements = document.querySelectorAll(selector);
     elements.forEach(elem => {
       elem.addEventListener('click', e => {
         if (e.target.getAttribute('data-ratio')) {
           ratio = +e.target.getAttribute('data-ratio');
+          localStorage.setItem('ratio', ratio);
         } else {
           sex = e.target.getAttribute('id');
+          localStorage.setItem('sex', sex);
         }
         elements.forEach(elem => {
           elem.classList.remove(activeClass);
@@ -494,21 +529,29 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
-  getStaticInformation('#gender', 'calculating__choose-item_active');
-  getStaticInformation('.calculating__choose_big', 'calculating__choose-item_active');
+  getStaticInformation('#gender div', 'calculating__choose-item_active');
+  getStaticInformation('.calculating__choose_big div', 'calculating__choose-item_active');
+
+  // функция получения значений динамических элементов в зависимости от введенных данных с проверкой value
+
   function getDynamicInformation(selector) {
     const input = document.querySelector(selector);
     input.addEventListener('input', () => {
-      switch (input.getAttribute('id')) {
-        case 'weight':
-          weight = +input.value;
-          break;
-        case 'height':
-          height = +input.value;
-          break;
-        case 'age':
-          age = +input.value;
-          break;
+      if (input.value.match(/\D/g)) {
+        input.style.border = '1px solid red';
+      } else {
+        input.style.border = '';
+        switch (input.getAttribute('id')) {
+          case 'weight':
+            weight = +input.value;
+            break;
+          case 'height':
+            height = +input.value;
+            break;
+          case 'age':
+            age = +input.value;
+            break;
+        }
       }
       calcTotal();
     });
