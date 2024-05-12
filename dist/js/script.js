@@ -1,167 +1,130 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-var __webpack_exports__ = {};
-/*!************************!*\
-  !*** ./src/js/main.js ***!
-  \************************/
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/js/modules/calc.js":
+/*!********************************!*\
+  !*** ./src/js/modules/calc.js ***!
+  \********************************/
+/***/ ((module) => {
 
 
-document.addEventListener('DOMContentLoaded', () => {
-  // TABS
 
-  const tabsHeader = document.querySelector('.tabheader__items'),
-    tabs = document.querySelectorAll('.tabheader__item'),
-    tabsContent = document.querySelectorAll('.tabcontent');
+function calc() {
+  const result = document.querySelector('.calculating__result span');
+  let sex, weight, height, age, ratio;
 
-  //Функция скрытия контента
+  // функция расчета изначальных значений статических элементов
 
-  function hiddeTabContent(els, contents) {
-    els.forEach(tab => {
-      tab.classList.remove('tabheader__item_active');
-    });
-    contents.forEach(item => {
-      item.classList.add('hide');
-      item.classList.remove('show', 'fade');
-    });
-  }
-
-  //Функция показа контента
-
-  function showTabContent(els, contents, i = 0) {
-    els[i].classList.add('tabheader__item_active');
-    contents[i].classList.add('show', 'fade');
-    contents[i].classList.remove('hide');
-  }
-  hiddeTabContent(tabs, tabsContent);
-  showTabContent(tabs, tabsContent);
-
-  //Обработчик на табы
-
-  tabsHeader.addEventListener('click', e => {
-    if (e.target && e.target.matches('.tabheader__item')) {
-      tabs.forEach((tab, ind) => {
-        if (e.target == tab) {
-          hiddeTabContent(tabs, tabsContent);
-          showTabContent(tabs, tabsContent, ind);
-        }
-      });
-    }
-  });
-
-  //TIMER
-
-  // const deadline = Date.parse(new Date()) + 60000;  // реализовать функционал записи deadline в localstrage (индивидуальный таймер для каждого пользователя)
-
-  const time = '2024-05-20',
-    // дата окончания акции
-    deadline = Date.parse(time);
-
-  //Функция добавления 0 для значений в таймере которые < 10
-
-  function getZero(num) {
-    if (num >= 0 && num < 10) {
-      return `0${num}`;
+  const initStaticInformation = (key, value) => {
+    if (localStorage.getItem(key)) {
+      return localStorage.getItem(key);
     } else {
-      return num;
+      localStorage.setItem(key, value);
+      return value;
     }
-  }
+  };
+  sex = initStaticInformation('sex', 'female');
+  ratio = initStaticInformation('ratio', 1.375);
 
-  //Функция получения временных значений до окончания акции 
+  // функция установки класса активности исходя из начальных значений статических элементов
 
-  function getTimeRemaining(endtime) {
-    let days, hours, minutes, seconds;
-    const total = endtime - new Date().getTime();
-    if (total <= 0) {
-      days = 0;
-      hours = 0;
-      minutes = 0;
-      seconds = 0;
-    } else {
-      days = Math.floor(total / (1000 * 60 * 60 * 24)), hours = Math.floor(total / (1000 * 60 * 60) % 24), minutes = Math.floor(total / (1000 * 60) % 60), seconds = Math.floor(total / 1000 % 60);
-    }
-    return {
-      total,
-      days,
-      hours,
-      minutes,
-      seconds
-    };
-  }
-
-  //Функция установки часов и внутренняя функция обновления часов с их остановкой
-
-  function setClock(selector, endtime) {
-    const timer = document.querySelector(selector),
-      days = timer.querySelector('#days'),
-      hours = timer.querySelector('#hours'),
-      minutes = timer.querySelector('#minutes'),
-      seconds = timer.querySelector('#seconds'),
-      timeInterval = setInterval(updateClock, 1000);
-    updateClock();
-    function updateClock() {
-      const t = getTimeRemaining(endtime);
-      days.textContent = getZero(t.days);
-      hours.textContent = getZero(t.hours);
-      minutes.textContent = getZero(t.minutes);
-      seconds.textContent = getZero(t.seconds);
-      if (t.total <= 0) {
-        clearInterval(timeInterval);
+  function initLocalSettingCalc(selector, activeClass) {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(elem => {
+      elem.classList.remove(activeClass);
+      if (elem.getAttribute('id') === localStorage.getItem('sex')) {
+        elem.classList.add(activeClass);
       }
+      if (elem.getAttribute('data-ratio') === localStorage.getItem('ratio')) {
+        elem.classList.add(activeClass);
+      }
+    });
+  }
+  initLocalSettingCalc('#gender div', 'calculating__choose-item_active');
+  initLocalSettingCalc('.calculating__choose_big div', 'calculating__choose-item_active');
+
+  // функция подсчета итогового результата
+
+  function calcTotal() {
+    if (!sex || !height || !weight || !age || !ratio) {
+      result.textContent = '____';
+      return;
+    }
+    if (sex === 'female') {
+      result.textContent = Math.round((447.6 + 9.2 * weight + 3.1 * height - 4.3 * age) * ratio);
+    } else {
+      result.textContent = Math.round((88.36 + 13.4 * weight + 4.8 * height - 5.7 * age) * ratio);
     }
   }
-  setClock('.timer', deadline);
+  calcTotal();
 
-  //MODAL
+  // функция переключения класса активности у статических элементов, получения их значений
+  // в зависимости от выбора и записи результата в local storage
 
-  const modalBtns = document.querySelectorAll('[data-modal]'),
-    modalWindow = document.querySelector('.modal');
-
-  //функция открытия модального окна
-
-  function openModalWindow() {
-    modalWindow.classList.add('show');
-    modalWindow.classList.remove('hide');
-    document.body.style.overflow = 'hidden';
-    clearInterval(timerOpenModalWindowId);
+  function getStaticInformation(selector, activeClass) {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(elem => {
+      elem.addEventListener('click', e => {
+        if (e.target.getAttribute('data-ratio')) {
+          ratio = +e.target.getAttribute('data-ratio');
+          localStorage.setItem('ratio', ratio);
+        } else {
+          sex = e.target.getAttribute('id');
+          localStorage.setItem('sex', sex);
+        }
+        elements.forEach(elem => {
+          elem.classList.remove(activeClass);
+        });
+        e.target.classList.add(activeClass);
+        calcTotal();
+      });
+    });
   }
-  modalBtns.forEach(btn => {
-    btn.addEventListener('click', openModalWindow);
-  });
+  getStaticInformation('#gender div', 'calculating__choose-item_active');
+  getStaticInformation('.calculating__choose_big div', 'calculating__choose-item_active');
 
-  //функция закрытия модального окна
+  // функция получения значений динамических элементов в зависимости от введенных данных с проверкой value
 
-  function closeModalWindow() {
-    modalWindow.classList.remove('show');
-    modalWindow.classList.add('hide');
-    document.body.style.overflow = '';
+  function getDynamicInformation(selector) {
+    const input = document.querySelector(selector);
+    input.addEventListener('input', () => {
+      if (input.value.match(/\D/g)) {
+        input.style.border = '1px solid red';
+      } else {
+        input.style.border = '';
+        switch (input.getAttribute('id')) {
+          case 'weight':
+            weight = +input.value;
+            break;
+          case 'height':
+            height = +input.value;
+            break;
+          case 'age':
+            age = +input.value;
+            break;
+        }
+      }
+      calcTotal();
+    });
   }
+  getDynamicInformation('#weight');
+  getDynamicInformation('#height');
+  getDynamicInformation('#age');
+}
+module.exports = calc;
 
-  //Варианты закрытия модального окна: клик на close или вне модальное окно, клавиша escape
+/***/ }),
 
-  modalWindow.addEventListener('click', e => {
-    if (e.target.getAttribute('data-close') == '' || e.target === modalWindow) {
-      closeModalWindow();
-    }
-  });
-  document.addEventListener('keydown', e => {
-    if (e.code === 'Escape' && modalWindow.classList.contains('show')) {
-      closeModalWindow();
-    }
-  });
+/***/ "./src/js/modules/card.js":
+/*!********************************!*\
+  !*** ./src/js/modules/card.js ***!
+  \********************************/
+/***/ ((module) => {
 
-  //Варианты открытия модального кона: таймер - через 60с; прокрутка в конец сайта
 
-  const timerOpenModalWindowId = setTimeout(openModalWindow, 60000);
-  function scrollOpenModalWindow() {
-    if (window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
-      openModalWindow();
-      window.removeEventListener('scroll', scrollOpenModalWindow);
-    }
-  }
-  window.addEventListener('scroll', scrollOpenModalWindow);
 
-  // MENU CARDS (class ES6)
-
+function card() {
   class MenuCard {
     constructor(src, alt, title, descr, price, perentSelector, ...classes) {
       this.src = src;
@@ -226,9 +189,20 @@ document.addEventListener('DOMContentLoaded', () => {
       new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
     });
   });
+}
+module.exports = card;
 
-  // FORMS
+/***/ }),
 
+/***/ "./src/js/modules/form.js":
+/*!********************************!*\
+  !*** ./src/js/modules/form.js ***!
+  \********************************/
+/***/ ((module) => {
+
+
+
+function form() {
   const forms = document.querySelectorAll('form');
 
   // сообщения пользователю после submit
@@ -310,9 +284,80 @@ document.addEventListener('DOMContentLoaded', () => {
       closeModalWindow();
     }, 3000);
   }
+}
+module.exports = form;
 
-  //SLIDER
+/***/ }),
 
+/***/ "./src/js/modules/modal.js":
+/*!*********************************!*\
+  !*** ./src/js/modules/modal.js ***!
+  \*********************************/
+/***/ ((module) => {
+
+
+
+function modal() {
+  const modalBtns = document.querySelectorAll('[data-modal]'),
+    modalWindow = document.querySelector('.modal');
+
+  //функция открытия модального окна
+
+  function openModalWindow() {
+    modalWindow.classList.add('show');
+    modalWindow.classList.remove('hide');
+    document.body.style.overflow = 'hidden';
+    clearInterval(timerOpenModalWindowId);
+  }
+  modalBtns.forEach(btn => {
+    btn.addEventListener('click', openModalWindow);
+  });
+
+  //функция закрытия модального окна
+
+  function closeModalWindow() {
+    modalWindow.classList.remove('show');
+    modalWindow.classList.add('hide');
+    document.body.style.overflow = '';
+  }
+
+  //Варианты закрытия модального окна: клик на close или вне модальное окно, клавиша escape
+
+  modalWindow.addEventListener('click', e => {
+    if (e.target.getAttribute('data-close') == '' || e.target === modalWindow) {
+      closeModalWindow();
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Escape' && modalWindow.classList.contains('show')) {
+      closeModalWindow();
+    }
+  });
+
+  //Варианты открытия модального кона: таймер - через 60с; прокрутка в конец сайта
+
+  const timerOpenModalWindowId = setTimeout(openModalWindow, 60000);
+  function scrollOpenModalWindow() {
+    if (window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+      openModalWindow();
+      window.removeEventListener('scroll', scrollOpenModalWindow);
+    }
+  }
+  window.addEventListener('scroll', scrollOpenModalWindow);
+}
+module.exports = modal;
+
+/***/ }),
+
+/***/ "./src/js/modules/slider.js":
+/*!**********************************!*\
+  !*** ./src/js/modules/slider.js ***!
+  \**********************************/
+/***/ ((module) => {
+
+
+
+function slider() {
   const slides = document.querySelectorAll('.offer__slide'),
     sliderArrow = document.querySelector('.offer__slider-counter'),
     current = document.querySelector('#current'),
@@ -456,110 +501,188 @@ document.addEventListener('DOMContentLoaded', () => {
       indicateDots(dots);
     });
   });
+}
+module.exports = slider;
 
-  // CALC
+/***/ }),
 
-  const result = document.querySelector('.calculating__result span');
-  let sex, weight, height, age, ratio;
+/***/ "./src/js/modules/tabs.js":
+/*!********************************!*\
+  !*** ./src/js/modules/tabs.js ***!
+  \********************************/
+/***/ ((module) => {
 
-  // функция расчета изначальных значений статических элементов
 
-  const initStaticInformation = (key, value) => {
-    if (localStorage.getItem(key)) {
-      return localStorage.getItem(key);
-    } else {
-      localStorage.setItem(key, value);
-      return value;
-    }
-  };
-  sex = initStaticInformation('sex', 'female');
-  ratio = initStaticInformation('ratio', 1.375);
 
-  // функция установки класса активности исходя из начальных значений статических элементов
+function tabs() {
+  const tabsHeader = document.querySelector('.tabheader__items'),
+    tabs = document.querySelectorAll('.tabheader__item'),
+    tabsContent = document.querySelectorAll('.tabcontent');
 
-  function initLocalSettingCalc(selector, activeClass) {
-    const elements = document.querySelectorAll(selector);
-    elements.forEach(elem => {
-      elem.classList.remove(activeClass);
-      if (elem.getAttribute('id') === localStorage.getItem('sex')) {
-        elem.classList.add(activeClass);
-      }
-      if (elem.getAttribute('data-ratio') === localStorage.getItem('ratio')) {
-        elem.classList.add(activeClass);
-      }
+  //Функция скрытия контента
+
+  function hiddeTabContent(els, contents) {
+    els.forEach(tab => {
+      tab.classList.remove('tabheader__item_active');
+    });
+    contents.forEach(item => {
+      item.classList.add('hide');
+      item.classList.remove('show', 'fade');
     });
   }
-  initLocalSettingCalc('#gender div', 'calculating__choose-item_active');
-  initLocalSettingCalc('.calculating__choose_big div', 'calculating__choose-item_active');
 
-  // функция подсчета итогового результата
+  //Функция показа контента
 
-  function calcTotal() {
-    if (!sex || !height || !weight || !age || !ratio) {
-      result.textContent = '____';
-      return;
-    }
-    if (sex === 'female') {
-      result.textContent = Math.round((447.6 + 9.2 * weight + 3.1 * height - 4.3 * age) * ratio);
-    } else {
-      result.textContent = Math.round((88.36 + 13.4 * weight + 4.8 * height - 5.7 * age) * ratio);
-    }
+  function showTabContent(els, contents, i = 0) {
+    els[i].classList.add('tabheader__item_active');
+    contents[i].classList.add('show', 'fade');
+    contents[i].classList.remove('hide');
   }
-  calcTotal();
+  hiddeTabContent(tabs, tabsContent);
+  showTabContent(tabs, tabsContent);
 
-  // функция переключения класса активности у статических элементов, получения их значений
-  // в зависимости от выбора и записи результата в local storage
+  //Обработчик на табы
 
-  function getStaticInformation(selector, activeClass) {
-    const elements = document.querySelectorAll(selector);
-    elements.forEach(elem => {
-      elem.addEventListener('click', e => {
-        if (e.target.getAttribute('data-ratio')) {
-          ratio = +e.target.getAttribute('data-ratio');
-          localStorage.setItem('ratio', ratio);
-        } else {
-          sex = e.target.getAttribute('id');
-          localStorage.setItem('sex', sex);
+  tabsHeader.addEventListener('click', e => {
+    if (e.target && e.target.matches('.tabheader__item')) {
+      tabs.forEach((tab, ind) => {
+        if (e.target == tab) {
+          hiddeTabContent(tabs, tabsContent);
+          showTabContent(tabs, tabsContent, ind);
         }
-        elements.forEach(elem => {
-          elem.classList.remove(activeClass);
-        });
-        e.target.classList.add(activeClass);
-        calcTotal();
       });
-    });
+    }
+  });
+}
+module.exports = tabs;
+
+/***/ }),
+
+/***/ "./src/js/modules/timer.js":
+/*!*********************************!*\
+  !*** ./src/js/modules/timer.js ***!
+  \*********************************/
+/***/ ((module) => {
+
+
+
+function timer() {
+  const time = '2024-05-20',
+    // дата окончания акции
+    deadline = Date.parse(time);
+
+  //Функция добавления 0 для значений в таймере которые < 10
+
+  function getZero(num) {
+    if (num >= 0 && num < 10) {
+      return `0${num}`;
+    } else {
+      return num;
+    }
   }
-  getStaticInformation('#gender div', 'calculating__choose-item_active');
-  getStaticInformation('.calculating__choose_big div', 'calculating__choose-item_active');
 
-  // функция получения значений динамических элементов в зависимости от введенных данных с проверкой value
+  //Функция получения временных значений до окончания акции 
 
-  function getDynamicInformation(selector) {
-    const input = document.querySelector(selector);
-    input.addEventListener('input', () => {
-      if (input.value.match(/\D/g)) {
-        input.style.border = '1px solid red';
-      } else {
-        input.style.border = '';
-        switch (input.getAttribute('id')) {
-          case 'weight':
-            weight = +input.value;
-            break;
-          case 'height':
-            height = +input.value;
-            break;
-          case 'age':
-            age = +input.value;
-            break;
-        }
+  function getTimeRemaining(endtime) {
+    let days, hours, minutes, seconds;
+    const total = endtime - new Date().getTime();
+    if (total <= 0) {
+      days = 0;
+      hours = 0;
+      minutes = 0;
+      seconds = 0;
+    } else {
+      days = Math.floor(total / (1000 * 60 * 60 * 24)), hours = Math.floor(total / (1000 * 60 * 60) % 24), minutes = Math.floor(total / (1000 * 60) % 60), seconds = Math.floor(total / 1000 % 60);
+    }
+    return {
+      total,
+      days,
+      hours,
+      minutes,
+      seconds
+    };
+  }
+
+  //Функция установки часов и внутренняя функция обновления часов с их остановкой
+
+  function setClock(selector, endtime) {
+    const timer = document.querySelector(selector),
+      days = timer.querySelector('#days'),
+      hours = timer.querySelector('#hours'),
+      minutes = timer.querySelector('#minutes'),
+      seconds = timer.querySelector('#seconds'),
+      timeInterval = setInterval(updateClock, 1000);
+    updateClock();
+    function updateClock() {
+      const t = getTimeRemaining(endtime);
+      days.textContent = getZero(t.days);
+      hours.textContent = getZero(t.hours);
+      minutes.textContent = getZero(t.minutes);
+      seconds.textContent = getZero(t.seconds);
+      if (t.total <= 0) {
+        clearInterval(timeInterval);
       }
-      calcTotal();
-    });
+    }
   }
-  getDynamicInformation('#weight');
-  getDynamicInformation('#height');
-  getDynamicInformation('#age');
+  setClock('.timer', deadline);
+}
+module.exports = timer;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+/*!************************!*\
+  !*** ./src/js/main.js ***!
+  \************************/
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tabs = __webpack_require__(/*! ./modules/tabs */ "./src/js/modules/tabs.js"),
+    timer = __webpack_require__(/*! ./modules/timer */ "./src/js/modules/timer.js"),
+    modal = __webpack_require__(/*! ./modules/modal */ "./src/js/modules/modal.js"),
+    card = __webpack_require__(/*! ./modules/card */ "./src/js/modules/card.js"),
+    form = __webpack_require__(/*! ./modules/form */ "./src/js/modules/form.js"),
+    slider = __webpack_require__(/*! ./modules/slider */ "./src/js/modules/slider.js"),
+    calc = __webpack_require__(/*! ./modules/calc */ "./src/js/modules/calc.js");
+  tabs();
+  timer();
+  modal();
+  card();
+  form();
+  slider();
+  calc();
 });
+})();
+
 /******/ })()
 ;
 //# sourceMappingURL=script.js.map
