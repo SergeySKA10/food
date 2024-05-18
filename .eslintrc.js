@@ -13,12 +13,13 @@ module.exports = {
 				'.eslintrc.{js,cjs}'
 			],
 			'parserOptions': {
-				'sourceType': 'script'
+				'sourceType': 'module'
 			}
 		}
 	],
 	'parserOptions': {
-		'ecmaVersion': 'latest'
+		'ecmaVersion': 'latest',
+		'sourceType': 'module'
 	},
 	'rules': {
 		'indent': [

@@ -1,7 +1,9 @@
 'use strict';
+import { openModalWindow, closeModalWindow } from './modal';
+import { postData } from '../services/services';
 
-function form() {
-	const forms = document.querySelectorAll('form');
+function form(selectorForm, selectorModal, timerID) {
+	const forms = document.querySelectorAll(selectorForm);
 
 	// сообщения пользователю после submit
 
@@ -16,21 +18,6 @@ function form() {
 	forms.forEach(form => {
 		bindPostData(form);
 	});
-
-	// функция по отправке данных на сервер
-
-	const postData = async (url, data) => {
-		// используем fetch для запроса
-		const result = await fetch(url, {
-			method: 'POST',
-			headers: {
-				'Content-type': 'application/json'
-			},
-			body: data
-		});
-
-		return await result.json();
-	};
 
 	// функция по отправке POST запроса
 
@@ -68,7 +55,7 @@ function form() {
 		const prevModalDilog = document.querySelector('.modal__dialog');
 		prevModalDilog.classList.add('hide');
 		
-		openModalWindow();
+		openModalWindow(selectorModal, timerID);
 
 		const modalThanks = document.createElement('div');
 		modalThanks.classList.add('modal__dialog');
@@ -79,17 +66,17 @@ function form() {
 			</div>
 		`;
 
-		document.querySelector('.modal').append(modalThanks);
+		document.querySelector(selectorModal).append(modalThanks);
 
 		// закрытие модального окна благодарности и возвращение модального кона в исходное состояние
 
 		setTimeout(() => {
 			modalThanks.remove();
 			prevModalDilog.classList.remove('hide');
-			closeModalWindow();
+			closeModalWindow(selectorModal);
 		}, 3000);
 
 	}   
 }
 
-module.exports = form;
+export default form;

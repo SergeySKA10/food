@@ -1,5 +1,7 @@
 'use strict';
 
+import { getResource } from '../services/services';
+
 function card() {
 	class MenuCard {
 		constructor(src, alt, title, descr, price, perentSelector, ...classes) {
@@ -43,20 +45,6 @@ function card() {
 			
 	};
 
-	// функция получения данных из db.json для карточек меню
-
-	const getResource = async (url) => {
-		const result = await fetch(url);
-
-		// проверяем статус запроса
-
-		if (!result.ok) {
-			throw new Error(`Could not fetch ${url}, status: ${result.status}`); // создаем ошибку для вывода статуса если статус запроса fetch не ok (200)
-		}
-
-		return await result.json();
-	};
-
 	// создание карточек меню на странице
 
 	getResource('http://localhost:3000/menu')
@@ -67,4 +55,4 @@ function card() {
 		});   
 }
 
-module.exports = card;
+export default card;

@@ -1,8 +1,7 @@
 'use strict';
 
-function timer() {
-	const time = '2024-05-20',  // дата окончания акции
-		  deadline = Date.parse(time);
+function timer(selectorTimer, time) {
+	const deadline = Date.parse(time);
 
 	//Функция добавления 0 для значений в таймере которые < 10
 
@@ -70,7 +69,7 @@ function timer() {
 
 	}
 
-	setClock('.timer', deadline); 
+	setClock(selectorTimer, deadline); 
 }
 
-module.exports = timer;
+export default timer;

@@ -1,15 +1,15 @@
 'use strict';
 
-function tabs() {
-	const tabsHeader = document.querySelector('.tabheader__items'),
-		  tabs = document.querySelectorAll('.tabheader__item'),
-		  tabsContent = document.querySelectorAll('.tabcontent');
+function tabs(perentSelectorTabs, selectorTab, selectorContent, classActive) {
+	const tabsHeader = document.querySelector(perentSelectorTabs),
+		  tabs = document.querySelectorAll(selectorTab),
+		  tabsContent = document.querySelectorAll(selectorContent);
 
 	//Функция скрытия контента
 
 	function hiddeTabContent(els, contents) {
 		els.forEach(tab => {
-			tab.classList.remove('tabheader__item_active');
+			tab.classList.remove(classActive);
 		});
 
 		contents.forEach(item => {
@@ -21,7 +21,7 @@ function tabs() {
 	//Функция показа контента
 
 	function showTabContent(els, contents, i = 0) {
-		els[i].classList.add('tabheader__item_active');
+		els[i].classList.add(classActive);
 		contents[i].classList.add('show', 'fade');
 		contents[i].classList.remove('hide');
 	}
@@ -32,7 +32,7 @@ function tabs() {
 	//Обработчик на табы
 
 	tabsHeader.addEventListener('click', (e) => {
-		if (e.target && e.target.matches('.tabheader__item')) {
+		if (e.target && e.target.matches(selectorTab)) {
 			tabs.forEach((tab, ind) => {
 				if (e.target == tab) {
 					hiddeTabContent(tabs, tabsContent);
@@ -43,4 +43,4 @@ function tabs() {
 	});
 }
 
-module.exports = tabs;
+export default tabs;
