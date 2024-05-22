@@ -1,9 +1,9 @@
 'use strict';
 
-function tabs(perentSelectorTabs, selectorTab, selectorContent, classActive) {
+function tabs({perentSelectorTabs, tabsSelector, contentSelector, classActive, classShow, classHide, classAnimation}) {
 	const tabsHeader = document.querySelector(perentSelectorTabs),
-		  tabs = document.querySelectorAll(selectorTab),
-		  tabsContent = document.querySelectorAll(selectorContent);
+		  tabs = document.querySelectorAll(tabsSelector),
+		  tabsContent = document.querySelectorAll(contentSelector);
 
 	//Функция скрытия контента
 
@@ -13,8 +13,8 @@ function tabs(perentSelectorTabs, selectorTab, selectorContent, classActive) {
 		});
 
 		contents.forEach(item => {
-			item.classList.add('hide');
-			item.classList.remove('show', 'fade');
+			item.classList.add(classHide);
+			item.classList.remove(classShow, classAnimation);
 		});
 	}
 
@@ -22,8 +22,8 @@ function tabs(perentSelectorTabs, selectorTab, selectorContent, classActive) {
 
 	function showTabContent(els, contents, i = 0) {
 		els[i].classList.add(classActive);
-		contents[i].classList.add('show', 'fade');
-		contents[i].classList.remove('hide');
+		contents[i].classList.add(classShow, classAnimation);
+		contents[i].classList.remove(classHide);
 	}
 
 	hiddeTabContent(tabs, tabsContent);
@@ -32,7 +32,7 @@ function tabs(perentSelectorTabs, selectorTab, selectorContent, classActive) {
 	//Обработчик на табы
 
 	tabsHeader.addEventListener('click', (e) => {
-		if (e.target && e.target.matches(selectorTab)) {
+		if (e.target && e.target.matches(tabsSelector)) {
 			tabs.forEach((tab, ind) => {
 				if (e.target == tab) {
 					hiddeTabContent(tabs, tabsContent);

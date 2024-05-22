@@ -6,7 +6,7 @@ const cleanCSS = require("gulp-clean-css");
 const postcss = require("gulp-postcss");
 const browsersync = require("browser-sync");
 
-const dist = "./dist";
+const dist = "./dist/";
 
 gulp.task("copy-html", () => {
 	return gulp
@@ -46,7 +46,7 @@ gulp.task("build-js", () => {
 											"@babel/preset-env",
 											{
 												debug: true,
-												corejs: 3,
+												corejs: '3.37',
 												useBuiltIns: "usage",
 											},
 										],
@@ -125,7 +125,7 @@ gulp.task("prod", () => {
 											"@babel/preset-env",
 											{
 												debug: false,
-												corejs: 3,
+												corejs: '3.37',
 												useBuiltIns: "usage",
 											},
 										],

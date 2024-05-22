@@ -1,6 +1,6 @@
 'use strict';
 
-function timer(selectorTimer, time) {
+function timer({timer, time, days, hours, minutes, seconds}) {
 	const deadline = Date.parse(time);
 
 	//Функция добавления 0 для значений в таймере которые < 10
@@ -42,12 +42,12 @@ function timer(selectorTimer, time) {
 
 	//Функция установки часов и внутренняя функция обновления часов с их остановкой
 
-	function setClock(selector, endtime) {
+	function setClock(selector, endtime, d, h, min, sec) {
 		const timer = document.querySelector(selector),
-			  days = timer.querySelector('#days'),
-			  hours = timer.querySelector('#hours'),
-			  minutes = timer.querySelector('#minutes'),
-			  seconds = timer.querySelector('#seconds'),
+			  days = timer.querySelector(d),
+			  hours = timer.querySelector(h),
+			  minutes = timer.querySelector(min),
+			  seconds = timer.querySelector(sec),
 			  timeInterval = setInterval(updateClock, 1000);
 		
 		updateClock();
@@ -69,7 +69,7 @@ function timer(selectorTimer, time) {
 
 	}
 
-	setClock(selectorTimer, deadline); 
+	setClock(timer, deadline, days, hours, minutes, seconds); 
 }
 
 export default timer;

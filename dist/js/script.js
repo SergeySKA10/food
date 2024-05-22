@@ -367,7 +367,8 @@ function slider({
   totalCounter,
   wrapper,
   field,
-  slide
+  slide,
+  color
 }) {
   const slides = document.querySelectorAll(sliderSelector),
     sliderArrow = document.querySelector(arrows),
@@ -475,7 +476,7 @@ function slider({
 			margin-right: 3px;
 			margin-left: 3px;
 			cursor: pointer;
-			background-color: #fff;
+			background-color: ${color};
 			background-clip: padding-box;
 			border-top: 10px solid transparent;
 			border-bottom: 10px solid transparent;
@@ -529,10 +530,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 
 
-function tabs(perentSelectorTabs, selectorTab, selectorContent, classActive) {
+function tabs({
+  perentSelectorTabs,
+  tabsSelector,
+  contentSelector,
+  classActive,
+  classShow,
+  classHide,
+  classAnimation
+}) {
   const tabsHeader = document.querySelector(perentSelectorTabs),
-    tabs = document.querySelectorAll(selectorTab),
-    tabsContent = document.querySelectorAll(selectorContent);
+    tabs = document.querySelectorAll(tabsSelector),
+    tabsContent = document.querySelectorAll(contentSelector);
 
   //Функция скрытия контента
 
@@ -541,8 +550,8 @@ function tabs(perentSelectorTabs, selectorTab, selectorContent, classActive) {
       tab.classList.remove(classActive);
     });
     contents.forEach(item => {
-      item.classList.add('hide');
-      item.classList.remove('show', 'fade');
+      item.classList.add(classHide);
+      item.classList.remove(classShow, classAnimation);
     });
   }
 
@@ -550,8 +559,8 @@ function tabs(perentSelectorTabs, selectorTab, selectorContent, classActive) {
 
   function showTabContent(els, contents, i = 0) {
     els[i].classList.add(classActive);
-    contents[i].classList.add('show', 'fade');
-    contents[i].classList.remove('hide');
+    contents[i].classList.add(classShow, classAnimation);
+    contents[i].classList.remove(classHide);
   }
   hiddeTabContent(tabs, tabsContent);
   showTabContent(tabs, tabsContent);
@@ -559,7 +568,7 @@ function tabs(perentSelectorTabs, selectorTab, selectorContent, classActive) {
   //Обработчик на табы
 
   tabsHeader.addEventListener('click', e => {
-    if (e.target && e.target.matches(selectorTab)) {
+    if (e.target && e.target.matches(tabsSelector)) {
       tabs.forEach((tab, ind) => {
         if (e.target == tab) {
           hiddeTabContent(tabs, tabsContent);
@@ -585,7 +594,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 
 
-function timer(selectorTimer, time) {
+function timer({
+  timer,
+  time,
+  days,
+  hours,
+  minutes,
+  seconds
+}) {
   const deadline = Date.parse(time);
 
   //Функция добавления 0 для значений в таймере которые < 10
@@ -622,12 +638,12 @@ function timer(selectorTimer, time) {
 
   //Функция установки часов и внутренняя функция обновления часов с их остановкой
 
-  function setClock(selector, endtime) {
+  function setClock(selector, endtime, d, h, min, sec) {
     const timer = document.querySelector(selector),
-      days = timer.querySelector('#days'),
-      hours = timer.querySelector('#hours'),
-      minutes = timer.querySelector('#minutes'),
-      seconds = timer.querySelector('#seconds'),
+      days = timer.querySelector(d),
+      hours = timer.querySelector(h),
+      minutes = timer.querySelector(min),
+      seconds = timer.querySelector(sec),
       timeInterval = setInterval(updateClock, 1000);
     updateClock();
     function updateClock() {
@@ -641,7 +657,7 @@ function timer(selectorTimer, time) {
       }
     }
   }
-  setClock(selectorTimer, deadline);
+  setClock(timer, deadline, days, hours, minutes, seconds);
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (timer);
 
@@ -771,9 +787,24 @@ __webpack_require__.r(__webpack_exports__);
 
 document.addEventListener('DOMContentLoaded', () => {
   //Варианты открытия модального кона: таймер - через 60с
-  const timerOpenModalWindowId = setTimeout(() => (0,_modules_modal__WEBPACK_IMPORTED_MODULE_2__.openModalWindow)(selectorModal, timerOpenModalWindowId), 60000);
-  (0,_modules_tabs__WEBPACK_IMPORTED_MODULE_0__["default"])('.tabheader__items', '.tabheader__item', '.tabcontent', 'tabheader__item_active');
-  (0,_modules_timer__WEBPACK_IMPORTED_MODULE_1__["default"])('.timer', '2024-05-20');
+  const timerOpenModalWindowId = setTimeout(() => (0,_modules_modal__WEBPACK_IMPORTED_MODULE_2__.openModalWindow)('.modal', timerOpenModalWindowId), 60000);
+  (0,_modules_tabs__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    perentSelectorTabs: '.tabheader__items',
+    tabsSelector: '.tabheader__item',
+    contentSelector: '.tabcontent',
+    classActive: 'tabheader__item_active',
+    classShow: 'show',
+    classHide: 'hide',
+    classAnimation: 'fade'
+  });
+  (0,_modules_timer__WEBPACK_IMPORTED_MODULE_1__["default"])({
+    timer: '.timer',
+    time: '2024-05-23',
+    days: '#days',
+    hours: '#hours',
+    minutes: '#minutes',
+    seconds: '#seconds'
+  });
   (0,_modules_modal__WEBPACK_IMPORTED_MODULE_2__["default"])('[data-modal]', '.modal', timerOpenModalWindowId);
   (0,_modules_card__WEBPACK_IMPORTED_MODULE_3__["default"])();
   (0,_modules_form__WEBPACK_IMPORTED_MODULE_4__["default"])('form', '.modal', timerOpenModalWindowId);
@@ -785,7 +816,8 @@ document.addEventListener('DOMContentLoaded', () => {
     totalCounter: '#total',
     arrows: '.offer__slider-counter',
     field: '.offer__slider-inner',
-    currentCounter: '#current'
+    currentCounter: '#current',
+    color: '#fff'
   });
 });
 })();

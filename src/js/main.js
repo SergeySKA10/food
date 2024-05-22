@@ -12,10 +12,25 @@ import { openModalWindow } from './modules/modal';
 document.addEventListener('DOMContentLoaded', () => {
 
 	//Варианты открытия модального кона: таймер - через 60с
-	const timerOpenModalWindowId = setTimeout(() => openModalWindow(selectorModal, timerOpenModalWindowId), 60000);
+	const timerOpenModalWindowId = setTimeout(() => openModalWindow('.modal', timerOpenModalWindowId), 60000);
 
-	tabs('.tabheader__items', '.tabheader__item', '.tabcontent', 'tabheader__item_active');
-	timer('.timer', '2024-05-20');
+	tabs({
+		perentSelectorTabs: '.tabheader__items',
+		tabsSelector: '.tabheader__item',
+		contentSelector: '.tabcontent',
+		classActive: 'tabheader__item_active',
+		classShow: 'show',
+		classHide: 'hide',
+		classAnimation: 'fade'
+	});
+	timer({
+		timer: '.timer',
+	 	time: '2024-05-23',
+		days: '#days',
+		hours: '#hours',
+		minutes: '#minutes',
+		seconds: '#seconds'
+	});
 	modal('[data-modal]', '.modal', timerOpenModalWindowId);
 	card();
 	form('form', '.modal', timerOpenModalWindowId);
@@ -27,7 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		totalCounter: '#total',
 		arrows: '.offer__slider-counter',
 		field: '.offer__slider-inner',
-		currentCounter: '#current'
+		currentCounter: '#current',
+		color: '#fff'
 	});
 
 });

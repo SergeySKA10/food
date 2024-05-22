@@ -1,6 +1,6 @@
 'use strict';
 
-function slider({sliderSelector, arrows, currentCounter, totalCounter, wrapper, field, slide}) {
+function slider({sliderSelector, arrows, currentCounter, totalCounter, wrapper, field, slide, color}) {
 	const slides = document.querySelectorAll(sliderSelector),
 		  sliderArrow = document.querySelector(arrows),
 		  current = document.querySelector(currentCounter),
@@ -120,7 +120,7 @@ function slider({sliderSelector, arrows, currentCounter, totalCounter, wrapper, 
 			margin-right: 3px;
 			margin-left: 3px;
 			cursor: pointer;
-			background-color: #fff;
+			background-color: ${color};
 			background-clip: padding-box;
 			border-top: 10px solid transparent;
 			border-bottom: 10px solid transparent;
