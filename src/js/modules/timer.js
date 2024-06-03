@@ -1,7 +1,18 @@
 'use strict';
 
-function timer({timer, time, days, hours, minutes, seconds}) {
-	const deadline = Date.parse(time);
+function timer({timer, deadline, days, hours, minutes, seconds}) {
+	let endtime = 0;
+
+	function initTimer (deadline) {
+		if (localStorage.getItem('timer')) {
+			endtime = +localStorage.getItem('timer');
+		} else {
+			endtime = new Date().getTime() + (deadline * 86400000);
+			localStorage.setItem('timer', endtime);
+		}
+	};
+	
+	initTimer(deadline);
 
 	//Функция добавления 0 для значений в таймере которые < 10
 
@@ -69,7 +80,7 @@ function timer({timer, time, days, hours, minutes, seconds}) {
 
 	}
 
-	setClock(timer, deadline, days, hours, minutes, seconds); 
+	setClock(timer, endtime, days, hours, minutes, seconds); 
 }
 
 export default timer;

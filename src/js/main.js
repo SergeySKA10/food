@@ -1,13 +1,13 @@
 'use strict';
 
 import tabs from './modules/tabs';
-import timer from './modules/timer';
 import modal from './modules/modal';
 import card from './modules/card';
 import form from './modules/form';
 import slider from './modules/slider';
 import calc from './modules/calc';
 import { openModalWindow } from './modules/modal';
+import cookiesConsent from './modules/cookieConsent';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -23,14 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		classHide: 'hide',
 		classAnimation: 'fade'
 	});
-	timer({
-		timer: '.timer',
-	 	time: '2024-05-23',
-		days: '#days',
-		hours: '#hours',
-		minutes: '#minutes',
-		seconds: '#seconds'
-	});
+	
 	modal('[data-modal]', '.modal', timerOpenModalWindowId);
 	card();
 	form('form', '.modal', timerOpenModalWindowId);
@@ -44,6 +37,19 @@ document.addEventListener('DOMContentLoaded', () => {
 		field: '.offer__slider-inner',
 		currentCounter: '#current',
 		color: '#fff'
+	});
+	cookiesConsent({
+		backgroundColor: '', 
+		height: '', 
+		text: '', 
+		textColor: '', 
+		link: '', 
+		linkColor: '', 
+		btnBorder: '', 
+		btnTextColor: '', 
+		nameConsent: '',
+		cancel: '',
+		confirm: ''
 	});
 
 });
